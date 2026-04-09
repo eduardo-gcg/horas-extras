@@ -524,8 +524,6 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: #e8e6e
       <select id="sel-depto" onchange="updatePeriod()">
         <option>Producción</option>
         <option>Producción Outsourcing</option>
-        <option>Cocina</option>
-        <option>Logística</option>
       </select>
     </div>
     <button class="btn btn-outline btn-sm" style="align-self:flex-end" onclick="showApproval()">✅ Aprobar registros</button>
@@ -721,47 +719,50 @@ const MOTIVOS = [
   "Por incapacidad del Personal"
 ];
 
-const EMPLEADOS_BASE = [
-  {codigo:440, nombre:"CARLOS ERNESTO ALVARADO NOYOLA"},
-  {codigo:406, nombre:"MARIA ANTONIA ASCENCIO MARTINEZ"},
-  {codigo:635, nombre:"MAIRA PATRICIA VALENCIA GONZALEZ"},
-  {codigo:187, nombre:"DINORA ELIZABETH JIMENEZ DE GONZALEZ MARTINEZ"},
-  {codigo:281, nombre:"JOSE ROLANDO ESCALANTE LEIVA"},
-  {codigo:149, nombre:"MIRNA LORENA RAMOS SOMOZA"},
-  {codigo:1137,nombre:"YULIANA NATALY MONGE VENTURA"},
-  {codigo:1013,nombre:"WENDY BERALY ORELLANA ARANDA"},
-  {codigo:1106,nombre:"HENRY EFRAIN GRANDE HERRERA"},
-  {codigo:1270,nombre:"REINA DEL CARMEN RODRIGUEZ GONZALEZ"},
-  {codigo:1281,nombre:"MARIA DEL CARMEN MEJIA CAMPOS"},
-  {codigo:1405,nombre:"FRANCISCO WILFREDO FLORES ORELLANA"},
-  {codigo:1453,nombre:"EDITH ESTEFANI SANCHEZ SANCHEZ"},
-  {codigo:1226,nombre:"SANDRA CAROLINA HERNANDEZ MARTINEZ"},
-  {codigo:883, nombre:"RODOLFO ALEXANDER GOMEZ"},
-  {codigo:1225,nombre:"ESTELA EMPERATRIZ SANTAMARIA ALVARADO"},
-  {codigo:1234,nombre:"WILLIAM ALEXIS ROSALES ALVARADO"},
-  {codigo:1236,nombre:"GABRIEL OMAR HERNANDEZ HERNANDEZ"},
-  {codigo:1240,nombre:"MARIO ESAU MEJIA DIAZ"},
-  {codigo:1242,nombre:"EVELYN MARICELA GARCIA AGUILLON"},
-  {codigo:1304,nombre:"GRECIA ALEJANDRA GIL"},
-  {codigo:1318,nombre:"WALTER ALEXANDER ORTIZ LOPEZ"},
-  {codigo:1357,nombre:"KATYA DEL CARMEN JIMENEZ"},
-  {codigo:1401,nombre:"KATERINNE BEATRIZ URIAS MONTERROZA"},
-  {codigo:1409,nombre:"KENIA ELIZABETH ANZORA ORELLANA"},
-  {codigo:1430,nombre:"HECTOR ANTONIO SANCHEZ CASTELLANOS"},
-  {codigo:1431,nombre:"REINA GUADALUPE AQUINO RODRIGUEZ"},
-  {codigo:1280,nombre:"MARIO HIDALGO"},
-  {codigo:1540,nombre:"SARA CORVERA"},
-  {codigo:1538,nombre:"LUIS PALMA"},
-  {codigo:1461,nombre:"KATERIN UNCO"},
-  {codigo:1349,nombre:"DAGIEL MORAN"},
-  {codigo:1481,nombre:"REINA AQUINO"},
-  {codigo:1507,nombre:"BEVERLY MILENA"},
-  {codigo:1996,nombre:"CLARA CORON"},
-  {codigo:1512,nombre:"MARTA PALMA"},
-  {codigo:1910,nombre:"NAYELI RIVERO"},
-  {codigo:1323,nombre:"PATRICIA PENA"},
-  {codigo:1184,nombre:"ILEANA PAREDES"},
-  {codigo:1776,nombre:"SANDRA PINEDA"}
+const EMPLEADOS_PRODUCCION = [
+  {codigo:440,  nombre:"CARLOS ERNESTO ALVARADO NOYOLA"},
+  {codigo:406,  nombre:"MARIA ANTONIA ASCENCIO MARTINEZ"},
+  {codigo:635,  nombre:"MAIRA PATRICIA VALENCIA GONZALEZ"},
+  {codigo:187,  nombre:"DINORA ELIZABETH JIMENEZ DE GONZALEZ MARTINEZ"},
+  {codigo:281,  nombre:"JOSE ROLANDO ESCALANTE LEIVA"},
+  {codigo:149,  nombre:"MIRNA LORENA RAMOS SOMOZA"},
+  {codigo:1137, nombre:"YULIANA NATALY MONGE VENTURA"},
+  {codigo:1013, nombre:"WENDY BERALY ORELLANA ARANDA"},
+  {codigo:1106, nombre:"HENRY EFRAIN GRANDE HERRERA"},
+  {codigo:1270, nombre:"REINA DEL CARMEN RODRIGUEZ GONZALEZ"},
+  {codigo:1281, nombre:"MARIA DEL CARMEN MEJIA CAMPOS"},
+  {codigo:1405, nombre:"FRANCISCO WILFREDO FLORES ORELLANA"},
+  {codigo:1453, nombre:"EDITH ESTEFANI SANCHEZ SANCHEZ"},
+];
+
+const EMPLEADOS_OUTSOURCING = [
+  {codigo:1226, nombre:"SANDRA CAROLINA HERNANDEZ MARTINEZ"},
+  {codigo:883,  nombre:"RODOLFO ALEXANDER GOMEZ"},
+  {codigo:1225, nombre:"ESTELA EMPERATRIZ SANTAMARIA ALVARADO"},
+  {codigo:1234, nombre:"WILLIAM ALEXIS ROSALES ALVARADO"},
+  {codigo:1236, nombre:"GABRIEL OMAR HERNANDEZ HERNANDEZ"},
+  {codigo:1240, nombre:"MARIO ESAU MEJIA DIAZ"},
+  {codigo:1242, nombre:"EVELYN MARICELA GARCIA AGUILLON"},
+  {codigo:1304, nombre:"GRECIA ALEJANDRA GIL"},
+  {codigo:1318, nombre:"WALTER ALEXANDER ORTIZ LOPEZ"},
+  {codigo:1357, nombre:"KATYA DEL CARMEN JIMENEZ"},
+  {codigo:1401, nombre:"KATERINNE BEATRIZ URIAS MONTERROZA"},
+  {codigo:1409, nombre:"KENIA ELIZABETH ANZORA ORELLANA"},
+  {codigo:1430, nombre:"HECTOR ANTONIO SANCHEZ CASTELLANOS"},
+  {codigo:1431, nombre:"REINA GUADALUPE AQUINO RODRIGUEZ"},
+  {codigo:1280, nombre:"MARIO HIDALGO"},
+  {codigo:1540, nombre:"SARA CORVERA"},
+  {codigo:1538, nombre:"LUIS PALMA"},
+  {codigo:1461, nombre:"KATERIN UNCO"},
+  {codigo:1349, nombre:"DAGIEL MORAN"},
+  {codigo:1481, nombre:"REINA AQUINO"},
+  {codigo:1507, nombre:"BEVERLY MILENA"},
+  {codigo:1996, nombre:"CLARA CORON"},
+  {codigo:1512, nombre:"MARTA PALMA"},
+  {codigo:1910, nombre:"NAYELI RIVERO"},
+  {codigo:1323, nombre:"PATRICIA PENA"},
+  {codigo:1184, nombre:"ILEANA PAREDES"},
+  {codigo:1776, nombre:"SANDRA PINEDA"},
 ];
 
 // ============================================================
@@ -937,20 +938,32 @@ function updatePeriod() {
   const txt = `${q} Quincena · ${m} ${a} · ${d}`;
   document.getElementById('topbar-period').textContent = txt;
   document.getElementById('approval-period-label').textContent = txt;
+  if (typeof refreshDatalist === 'function') refreshDatalist();
   renderHome();
 }
 
+function getEmpleadosList() {
+  const depto = document.getElementById('sel-depto').value;
+  return depto === 'Producción Outsourcing' ? EMPLEADOS_OUTSOURCING : EMPLEADOS_PRODUCCION;
+}
+
 function buildDatalist() {
+  const input = document.getElementById('f-nombre');
+  input.addEventListener('input', function() {
+    const lista = getEmpleadosList();
+    const match = lista.find(e => e.nombre === this.value);
+    if (match) document.getElementById('f-codigo').value = match.codigo;
+  });
+  refreshDatalist();
+}
+
+function refreshDatalist() {
   const dl = document.getElementById('emp-datalist');
-  EMPLEADOS_BASE.forEach(e => {
+  dl.innerHTML = '';
+  getEmpleadosList().forEach(e => {
     const opt = document.createElement('option');
     opt.value = e.nombre;
-    opt.dataset.codigo = e.codigo;
     dl.appendChild(opt);
-  });
-  document.getElementById('f-nombre').addEventListener('input', function() {
-    const match = EMPLEADOS_BASE.find(e => e.nombre === this.value);
-    if (match) document.getElementById('f-codigo').value = match.codigo;
   });
 }
 
