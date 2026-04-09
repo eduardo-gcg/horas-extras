@@ -802,7 +802,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 // GOOGLE APPS SCRIPT CONFIG
 // ============================================================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZ9a1r_JUkrEKwdYrqo-FD34ZXFX_YoA9EXWzaiYIJWXmZ2U6MgwKQCpwv8W1zqi2h/exec';
-const COLS = ['id','codigo','nombre','fecha','inicio','salida','horas','motivo','obs','approved','approvedAt','supervisorNombre','supervisorCargo','creadoAt'];
+const COLS = ['id','codigo','nombre','fecha','inicio','salida','horas','motivo','obs','approved','approvedAt','supervisorNombre','supervisorCargo','creadoAt','departamento'];
 
 let syncPending = false;
 
@@ -1014,8 +1014,9 @@ function getFilteredEntries() {
   const q = parseInt(document.getElementById('sel-quincena').value);
   const mes = document.getElementById('sel-mes').value;
   const anio = parseInt(document.getElementById('inp-anio').value);
+  const depto = document.getElementById('sel-depto').value;
   const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  const mesIdx = months.indexOf(mes); // 0-based
+  const mesIdx = months.indexOf(mes);
 
   return entries.filter(e => {
     if (!e.fecha) return false;
@@ -1025,6 +1026,8 @@ function getFilteredEntries() {
     const day = d.getDate();
     if (q === 1 && day > 15) return false;
     if (q === 2 && day <= 15) return false;
+    // Filtro por departamento — si el registro no tiene depto, lo muestra en todos
+    if (e.departamento && e.departamento !== depto) return false;
     return true;
   });
 }
@@ -1098,11 +1101,11 @@ async function saveEntry() {
   if (editingId) {
     const idx = entries.findIndex(x => x.id === editingId);
     if (idx !== -1) {
-      entries[idx] = { ...entries[idx], codigo, nombre, fecha, inicio, salida, horas, motivo: selectedMotivo, obs, approved: false, approvedAt: null, supervisorNombre: null, supervisorCargo: null };
+      entries[idx] = { ...entries[idx], codigo, nombre, fecha, inicio, salida, horas, motivo: selectedMotivo, obs, approved: false, approvedAt: null, supervisorNombre: null, supervisorCargo: null, departamento: document.getElementById('sel-depto').value };
     }
     toast('Registro actualizado', 'success');
   } else {
-    entries.push({ id: uid(), codigo, nombre, fecha, inicio, salida, horas, motivo: selectedMotivo, obs, approved: false, approvedAt: null, supervisorNombre: null, supervisorCargo: null, creadoAt: new Date().toISOString() });
+    entries.push({ id: uid(), codigo, nombre, fecha, inicio, salida, horas, motivo: selectedMotivo, obs, approved: false, approvedAt: null, supervisorNombre: null, supervisorCargo: null, creadoAt: new Date().toISOString(), departamento: document.getElementById('sel-depto').value });
     toast('Registro guardado ✓', 'success');
   }
   await saveData();
