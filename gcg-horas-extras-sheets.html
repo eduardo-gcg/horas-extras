@@ -557,7 +557,25 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: #e8e6e
       <div class="login-numpad" id="login-numpad"></div>
       <button class="login-back-btn" onclick="loginBack()">← Cambiar código</button>
     </div>
+    <!-- PASO 3: Supervisor -->
+    <div class="login-step" id="login-step3">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:32px">🔐</div>
+        <div style="font-weight:700;font-size:15px;color:white;margin-top:8px">Acceso Supervisor</div>
+        <div style="font-size:11px;color:#666;margin-top:4px">Ingresa tu PIN de autorización</div>
+      </div>
+      <div class="login-pin-display">
+        <div class="login-pin-dot" id="spd0"></div>
+        <div class="login-pin-dot" id="spd1"></div>
+        <div class="login-pin-dot" id="spd2"></div>
+        <div class="login-pin-dot" id="spd3"></div>
+      </div>
+      <div class="login-error" id="login-error3">PIN incorrecto. Intenta de nuevo.</div>
+      <div class="login-numpad" id="sup-numpad"></div>
+      <button class="login-back-btn" onclick="loginSupBack()">← Volver</button>
+    </div>
   </div>
+  <button style="background:none;border:none;color:#444;font-size:12px;margin-top:20px;cursor:pointer;font-family:'Barlow',sans-serif;" onclick="loginShowSup()">Acceso Supervisor ›</button>
 </div>
 
 <!-- ===================== SCREEN: HOME ===================== -->
@@ -1030,6 +1048,77 @@ async function onLoginSuccess() {
   showScreen('screen-home');
 }
 
+function loginShowSup() {
+  document.getElementById('login-step1').classList.remove('active');
+  document.getElementById('login-step2').classList.remove('active');
+  document.getElementById('login-step3').classList.add('active');
+  supPinEntered = '';
+  updateSupPinDisplay();
+  document.getElementById('login-error3').classList.remove('show');
+  buildSupNumpad();
+}
+
+function loginSupBack() {
+  document.getElementById('login-step3').classList.remove('active');
+  document.getElementById('login-step1').classList.add('active');
+}
+
+let supPinEntered = '';
+
+function buildSupNumpad() {
+  const pad = document.getElementById('sup-numpad');
+  if (!pad) return;
+  pad.innerHTML = '';
+  ['1','2','3','4','5','6','7','8','9','','0','⌫'].forEach(k => {
+    const btn = document.createElement('div');
+    btn.className = 'login-key' + (k === '⌫' ? ' del' : '') + (k === '' ? ' empty' : '');
+    btn.textContent = k;
+    if (k !== '') btn.onclick = () => supKeyPress(k);
+    pad.appendChild(btn);
+  });
+}
+
+function supKeyPress(k) {
+  if (k === '⌫') {
+    supPinEntered = supPinEntered.slice(0, -1);
+  } else if (supPinEntered.length < 4) {
+    supPinEntered += k;
+  }
+  updateSupPinDisplay();
+  document.getElementById('login-error3').classList.remove('show');
+  if (supPinEntered.length === 4) setTimeout(supValidatePin, 150);
+}
+
+function updateSupPinDisplay() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('spd' + i);
+    if (dot) dot.classList.toggle('filled', i < supPinEntered.length);
+  }
+}
+
+function supValidatePin() {
+  const found = SUPERVISORES.find(s => s.pin === supPinEntered);
+  if (found) {
+    currentUser = { codigo: 'SUP_' + found.pin, nombre: found.nombre, departamento: 'Todos', pin: found.pin, rol: 'supervisor', cargo: found.cargo };
+    onSupLoginSuccess();
+  } else {
+    document.getElementById('login-error3').classList.add('show');
+    supPinEntered = '';
+    updateSupPinDisplay();
+  }
+}
+
+async function onSupLoginSuccess() {
+  const initials = currentUser.nombre.split(' ').slice(0,2).map(w => w[0]).join('');
+  document.getElementById('session-avatar').textContent = initials;
+  document.getElementById('session-name').textContent = currentUser.nombre.split(' ').slice(0,2).join(' ') + ' · Supervisor';
+  document.getElementById('sel-depto').disabled = false;
+  updatePeriod();
+  await loadData();
+  renderHome();
+  showScreen('screen-home');
+}
+
 function logout() {
   currentUser = null;
   loginPinEntered = '';
@@ -1039,7 +1128,9 @@ function logout() {
   document.getElementById('login-codigo').value = '';
   document.getElementById('login-error1').classList.remove('show');
   document.getElementById('login-error2').classList.remove('show');
+  document.getElementById('login-step3').classList.remove('active');
   document.getElementById('sel-depto').disabled = false;
+  supPinEntered = '';
   updateLoginPinDisplay();
   showScreen('screen-login');
 }
