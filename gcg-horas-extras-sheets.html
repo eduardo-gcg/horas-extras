@@ -886,7 +886,7 @@ async function loadData() {
     entries = rows.slice(1).map(row => {
       const obj = {};
       header.forEach((col, i) => {
-        let val = row[i] !== undefined ? String(row[i]) : '';
+        let val = (row[i] !== undefined && row[i] !== null && String(row[i]) !== 'undefined') ? String(row[i]) : '';
         if (col === 'approved') {
           obj[col] = val === 'true' || val === 'TRUE';
         } else if (col === 'fecha') {
@@ -1054,8 +1054,9 @@ function getFilteredEntries() {
     const day = d.getDate();
     if (q === 1 && day > 15) return false;
     if (q === 2 && day <= 15) return false;
-    // Filtro por departamento — si el registro no tiene depto, lo muestra en todos
-    if (e.departamento && e.departamento !== depto) return false;
+    // Filtro por departamento — si el registro no tiene depto (null/vacío/undefined), lo muestra en todos
+    const dep = (e.departamento && e.departamento !== 'undefined' && e.departamento !== 'null') ? e.departamento : null;
+    if (dep && dep !== depto) return false;
     return true;
   });
 }
