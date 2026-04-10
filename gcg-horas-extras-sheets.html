@@ -893,7 +893,7 @@ async function loadData() {
           // Acepta cualquier formato de fecha y extrae YYYY-MM-DD
           if (!val || val === '') { obj[col] = null; return; }
           try {
-            const d = new Date(val);
+            const valFixed = val.length === 10 ? val + "T12:00:00" : val; const d = new Date(valFixed);
             if (!isNaN(d.getTime())) {
               const y = d.getFullYear();
               const m = String(d.getMonth()+1).padStart(2,'0');
